@@ -1,73 +1,34 @@
-#[cfg(feature = "blosc")]
-use hdf5::filters::blosc_set_nthreads;
-use hdf5::{File, H5Type, Result};
-use ndarray::{arr2, s};
+use hdf5::File;
+use ndarray::ArrayBase;
+use std::path::Path;
 
-#[derive(H5Type, Clone, PartialEq, Debug)] // register with HDF5
-#[repr(u8)]
-pub enum Color {
-    R = 1,
-    G = 2,
-    B = 3,
-}
+fn read_hdf5(filename: &str, dataset_key: &str) -> Vec<i64> {
+    // Open the HDF5 file
+    let file = File::open(Path::new(filename)).expect("Failed to open HDF5 file");
 
-#[derive(H5Type, Clone, PartialEq, Debug)] // register with HDF5
-#[repr(C)]
-pub struct Pixel {
-    xy: (i64, i64),
-    color: Color,
-}
-
-impl Pixel {
-    pub fn new(x: i64, y: i64, color: Color) -> Self {
-        Self { xy: (x, y), color }
+    let group_names: Vec<String> = file.member_names().expect("Failed to get group names");
+    
+    for name in &group_names {
+        println!("Group name: {}", name);
     }
+    // let names=
+    // Navigate through groups and read the dataset
+    let group_li6 = file.group(&group_names[0]).expect("Failed to open group Li6");
+    let group_energy = group_li6.group("energy").expect("Failed to open group energy");
+    let dataset = group_energy.dataset(dataset_key).expect("Failed to open dataset");
+    let data: Vec<i64> = dataset.read_1d().expect("Failed to read dataset").to_vec();
+
+    data
 }
 
-fn write_hdf5() -> Result<()> {
-    use Color::*;
-    let file = File::create("pixels.h5")?; // open for writing
-    let group = file.create_group("dir")?; // create a group
-    #[cfg(feature = "blosc")]
-    blosc_set_nthreads(2); // set number of blosc threads
-    let builder = group.new_dataset_builder();
-    #[cfg(feature = "blosc")]
-    let builder = builder.blosc_zstd(9, true); // zstd + shuffle
-    let ds = builder
-        .with_data(&arr2(&[
-            // write a 2-D array of data
-            [Pixel::new(1, 2, R), Pixel::new(2, 3, B)],
-            [Pixel::new(3, 4, G), Pixel::new(4, 5, R)],
-            [Pixel::new(5, 6, B), Pixel::new(6, 7, G)],
-        ]))
-        // finalize and write the dataset
-        .create("pixels")?;
-    // create an attr with fixed shape but don't write the data
-    let attr = ds.new_attr::<Color>().shape([3]).create("colors")?;
-    // write the attr data
-    attr.write(&[R, G, B])?;
-    Ok(())
-}
+fn main() {
+    // Define the filename and dataset key
+    const FILENAME: &str = "Li6.h5";
+    const DATASET_KEY: &str = "294K";
 
-fn read_hdf5() -> Result<()> {
-    use Color::*;
-    let file = File::open("pixels.h5")?; // open for reading
-    let ds = file.dataset("dir/pixels")?; // open the dataset
-    assert_eq!(
-        // read a slice of the 2-D dataset and verify it
-        ds.read_slice::<Pixel, _, _>(s![1.., ..])?,
-        arr2(&[
-            [Pixel::new(3, 4, G), Pixel::new(4, 5, R)],
-            [Pixel::new(5, 6, B), Pixel::new(6, 7, G)],
-        ])
-    );
-    let attr = ds.attr("colors")?; // open the attribute
-    assert_eq!(attr.read_1d::<Color>()?.as_slice().unwrap(), &[R, G, B]);
-    Ok(())
-}
+    // Call the read_hdf5 function with the filename and dataset key as arguments
+    let data = read_hdf5(FILENAME, DATASET_KEY);
 
-fn main() -> Result<()> {
-    write_hdf5()?;
-    read_hdf5()?;
-    Ok(())
+    // Print the result
+    println!("{:?}", data);
 }
