@@ -1,9 +1,17 @@
-build binary with
+First install Rust and Cargo. Instructions [here]([url](https://doc.rust-lang.org/cargo/getting-started/installation.html))
+
+I plan to make a Carog crete but till then clone this repo
+
+```
+git clone https://github.com/shimwell/openmc_rust_hdf5_reader.git
+```
+
+build the Rust binary
 ```
 cargo build
 ```
 
-run with cargo using
+Run the binary using cargo
 ```
 cargo run
 ```
