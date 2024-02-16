@@ -1,9 +1,29 @@
-build binary with
+# Work in progress - not ready for use
+
+I plan to make a portable hdf5 file reader that reads openmc cross section files.
+
+Ideally there will be several deployment options
+
+- Cargo crate
+- PyPi package
+- WASM executable
+
+For now the repo is no where near finished and very much experimental
+
+First install Rust and Cargo. Instructions [here]([url](https://doc.rust-lang.org/cargo/getting-started/installation.html))
+
+The clone the repo
+
+```
+git clone https://github.com/shimwell/openmc_rust_hdf5_reader.git
+```
+
+build the Rust binary
 ```
 cargo build
 ```
 
-run with cargo using
+Run the binary using cargo
 ```
 cargo run
 ```
