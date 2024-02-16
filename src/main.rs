@@ -36,5 +36,5 @@ fn main() {
     let data = read_hdf5(FILENAME, DATASET_KEY);
 
     // Print the result
-    // println!("{:?}", data);
+    println!("{:?}", data);
 }
