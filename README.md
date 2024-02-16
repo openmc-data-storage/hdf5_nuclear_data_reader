@@ -10,7 +10,7 @@ Ideally there will be several deployment options
 
 For now the repo is no where near finished and very much experimental
 
-First install Rust and Cargo. Instructions [here]([url](https://doc.rust-lang.org/cargo/getting-started/installation.html))
+First install Rust and Cargo. Instructions [here](https://doc.rust-lang.org/cargo/getting-started/installation.html)
 
 The clone the repo
 
