@@ -33,7 +33,7 @@ execute with
 ./target/debug/website_example
 ```
 
-Python h5py can also access the cross section format
+Python h5py can also access the cross section format and I've been using this to compare outputs
 ```python
 import h5py
 
