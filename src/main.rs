@@ -2,7 +2,7 @@ use hdf5::File;
 // use ndarray::ArrayBase;
 use std::path::Path;
 
-fn read_hdf5(filename: &str, dataset_key: &str) -> Vec<i64> {
+fn read_hdf5(filename: &str, temperature_key: &str, reaction_key:  &str,) -> Vec<f64> {
     // Open the HDF5 file
     let file = File::open(Path::new(filename)).expect("Failed to open HDF5 file");
 
@@ -27,8 +27,15 @@ fn read_hdf5(filename: &str, dataset_key: &str) -> Vec<i64> {
     let group_reactions_names: Vec<String> = group_reactions.member_names().expect("Failed to get group names");
     println!("{:?}", group_reactions_names);
 
-    let dataset = group_energy.dataset(&dataset_key).expect("Failed to open dataset");
-    let data: Vec<i64> = dataset.read_1d().expect("Failed to read dataset").to_vec();
+    
+    let group_reactions_mt = group_reactions.group(&reaction_key).expect("Failed to open dataset");
+    let group_294k = group_reactions_mt.group(temperature_key).expect("Failed to open group 294K");
+    let dataset_xs = group_294k.dataset("xs").expect("Failed to open dataset xs");
+    
+    println!("{:?}", dataset_xs);
+
+    // let dataset_energy = group_energy.dataset(&temperature_key).expect("Failed to open dataset");
+    let data: Vec<f64> = dataset_xs.read_1d().expect("Failed to read dataset").to_vec();
 
     data
 }
@@ -36,10 +43,11 @@ fn read_hdf5(filename: &str, dataset_key: &str) -> Vec<i64> {
 fn main() {
     // Define the filename and dataset key
     const FILENAME: &str = "Li6.h5";
-    const DATASET_KEY: &str = "294K";
+    const TEMPERATURE: &str = "294K";
+    const REACTION_MT: &str = "reaction_002";
 
     // Call the read_hdf5 function with the filename and dataset key as arguments
-    let data = read_hdf5(FILENAME, DATASET_KEY);
+    let data = read_hdf5(FILENAME, TEMPERATURE, REACTION_MT);
     // read_hdf5(FILENAME, DATASET_KEY);
 
     // Print the energy values
