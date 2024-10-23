@@ -1,6 +1,6 @@
 # Work in progress - not ready for use
 
-I plan to make a portable hdf5 file reader that reads openmc cross section files.
+I plan to make a portable hdf5 file reader that reads OpenMC cross section files.
 
 Ideally there will be several deployment options
 
@@ -23,17 +23,19 @@ build the Rust binary
 cargo build
 ```
 
-Run the binary using cargo
-```
-cargo run
-```
-
-execute with
+Run the binary
 ```
 ./target/debug/website_example
 ```
 
+Run the binary using cargo (does not need building first)
+```
+cargo run
+```
+
+
 Python h5py can also access the cross section format and I've been using this to compare outputs
+
 ```python
 import h5py
 
