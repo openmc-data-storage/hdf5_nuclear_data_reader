@@ -2,7 +2,7 @@ use hdf5::File;
 use std::collections::HashMap;
 use std::path::Path;
 
-fn read_hdf5(filename: &str) -> HashMap<String, HashMap<String, HashMap<String, Vec<f64>>>> {
+fn read_hdf5(filename: &str) -> (HashMap<String, Vec<f64>>, HashMap<String, HashMap<String, Vec<f64>>>) {
     // Open the HDF5 file
     let file = File::open(Path::new(filename)).expect("Failed to open HDF5 file");
 
@@ -26,16 +26,13 @@ fn read_hdf5(filename: &str) -> HashMap<String, HashMap<String, HashMap<String, 
     let temperature_group_names: Vec<String> = group_energy.member_names().expect("Failed to get temperature group names");
     println!("{:?}", temperature_group_names);
 
-    let mut result = HashMap::new();
     let mut energy_map = HashMap::new();
     let mut reactions_map = HashMap::new();
 
     for temperature_key in temperature_group_names {
         let dataset_energy = group_energy.dataset(&temperature_key).expect("Failed to open dataset");
         let energy_data: Vec<f64> = dataset_energy.read_1d().expect("Failed to read dataset").to_vec();
-        let mut temp_energy_map = HashMap::new();
-        temp_energy_map.insert(temperature_key.clone(), energy_data);
-        energy_map.insert(temperature_key.clone(), temp_energy_map);
+        energy_map.insert(temperature_key.clone(), energy_data);
 
         for reaction_name in &group_reactions_names {
             let group_reactions_mt = group_reactions.group(reaction_name).expect("Failed to open dataset");
@@ -46,13 +43,8 @@ fn read_hdf5(filename: &str) -> HashMap<String, HashMap<String, HashMap<String, 
         }
     }
 
-    result.insert("energy".to_string(), energy_map);
-    result.insert("reactions".to_string(), reactions_map);
-
-    result
+    (energy_map, reactions_map)
 }
-
-
 
 fn main() {
     // Define the filename
@@ -62,16 +54,19 @@ fn main() {
     let reaction_key = "reaction_444";
 
     // Call the read_hdf5 function with the filename as an argument
-    let result = read_hdf5(FILENAME);
+    let (energy_map, reactions_map) = read_hdf5(FILENAME);
 
-    // Print the key structure of the returned HashMap
-    for (key, value) in &result {
-        println!("Top-level key: {}", key);
-        for (sub_key, sub_value) in value {
-            println!("  Second-level key: {}", sub_key);
-            for (inner_key, _) in sub_value {
-                println!("    Third-level key: {}", inner_key);
-            }
+    // Print the key structure of the returned HashMaps
+    println!("Energy map keys:");
+    for key in energy_map.keys() {
+        println!("  {}", key);
+    }
+
+    println!("Reactions map keys:");
+    for (reaction, temp_map) in &reactions_map {
+        println!("  Reaction: {}", reaction);
+        for temp in temp_map.keys() {
+            println!("    Temperature: {}", temp);
         }
     }
 
@@ -79,7 +74,7 @@ fn main() {
     println!(
         "Energy data for {}: {:?}", 
         temperature_key, 
-        result.get("energy").unwrap().get(temperature_key).unwrap().get(temperature_key).unwrap()
+        energy_map.get(temperature_key).unwrap()
     );
 
     // Print the reaction data for the specified temperature and reaction
@@ -87,6 +82,6 @@ fn main() {
         "Reaction {} data for {}: {:?}", 
         reaction_key, 
         temperature_key, 
-        result.get("reactions").unwrap().get(reaction_key).unwrap().get(temperature_key).unwrap()
+        reactions_map.get(reaction_key).unwrap().get(temperature_key).unwrap()
     );
 }
