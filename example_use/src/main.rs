@@ -1,4 +1,4 @@
-use hdf5_nuc_data_reader::{read_hdf5};
+use hdf5_nuclear_data_reader::{read_hdf5};
 
 fn main() {
     // Define the filename

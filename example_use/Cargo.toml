@@ -4,4 +4,4 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-hdf5_nuc_data_reader = { path = "../" }
+hdf5_nuclear_data_reader = { path = "../" }
