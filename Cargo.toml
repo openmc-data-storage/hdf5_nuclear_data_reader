@@ -1,12 +1,20 @@
 [package]
-name = "website_example"
+name = "hdf5_nuc_data_reader"
 version = "0.1.0"
 edition = "2021"
+authors = ["Jonathan Shimwell <mail@jshimwell.com>"]
+description = "A package for reading nuclear data from HDF5 files in the OpenMC format"
+license = "MIT"
+repository = "https://github.com/fusion-energy/hdf5_nuc_data_reader"
+documentation = "https://github.com/fusion-energy/hdf5_nuc_data_reader"
+homepage = "https://github.com/fusion-energy/hdf5_nuc_data_reader"
+keywords = ["h5", "cross-section", "hdf5", "openmc", "nuclear", "data"]
 crate-type = ["staticlib"]
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 hdf5-sys = { version = "0.8.1", features = ["static"] }
 hdf5 = "0.8.1"
-ndarray = "0.15.6"
+
+[lib]
+name = "hdf5_nuc_data_reader"
+path = "src/lib.rs"
