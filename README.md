@@ -1,11 +1,12 @@
-# Work in progress - not ready for use
+[![CI Rust testing](https://github.com/openmc-data-storage/hdf5_nuclear_data_reader/actions/workflows/ci.yml/badge.svg)](https://github.com/openmc-data-storage/hdf5_nuclear_data_reader/actions/workflows/ci.yml)
 
-I plan to make a portable hdf5 file reader that reads OpenMC cross section files.
+A portable hdf5 file reader that reads OpenMC cross section files.
+
+This package incorporates the parts of hdf5 library needed for h5 file reading and therefore it is not necessary to install hdf5 on the computer before hand. See the Dockerfile for a demonstration of this
 
 Ideally there will be several deployment options
 
-- Cargo crate
-- PyPi package
+- Cargo crate (in progress)
 - WASM executable
 
 For now the repo is no where near finished and very much experimental
@@ -18,31 +19,8 @@ The clone the repo
 git clone https://github.com/shimwell/openmc_rust_hdf5_reader.git
 ```
 
-build the Rust binary
+Run the example using cargo
 ```
-cargo build
-```
-
-Run the binary
-```
-./target/debug/website_example
-```
-
-Run the binary using cargo (does not need building first)
-```
+cd openmc_rust_hdf5_reader/examples_use
 cargo run
-```
-
-
-Python h5py can also access the cross section format and I've been using this to compare outputs
-
-```python
-import h5py
-
-h5file = h5py.File('Li6.h5', 'r')
-
-print(list(h5file['Li6']['energy']['294K']))
-print(list(h5file['Li6']['reactions']))
-print(list(h5file['Li6']['reactions']['reaction_444']['294K']['xs']))
-print(list(h5file['Li6'].keys()))
 ```
